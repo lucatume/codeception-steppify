@@ -13,7 +13,7 @@ and then add the command to the custom commands used by your project following [
 
 ```yaml
 extensions:
-    commands: [tad\Command\Steppify]
+    commands: [tad\Codeception\Command\Steppify]
 ```
 
 ## Usage

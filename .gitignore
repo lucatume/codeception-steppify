@@ -1,3 +1,5 @@
 /vendor/
 
-tests/_output/*
+tests/_output/*codeception.yml
+tests/unit.suite.yml
+tests/functional.suite.yml
