@@ -24,7 +24,7 @@ As an example I might want to generate [Gherkin](!g) steps to use Codeception ow
 codecept gherkin:steppify PHPBrowser
 ```
 
-The command will generate a `PHPBrowserSteps.php`, a php `trait`, file in the tests `_support/_generated` folder.  
+The command will generate `PHPBrowserGherkinSteps.php`, a PHP `trait`, file in the tests `_support/_generated` folder.
 To start using the new methods all that's required is to add a `use` statement for the `PHPBrowserSteps` trait in the suite `Tester` class:
 
 ```php
@@ -49,7 +49,7 @@ To start using the new methods all that's required is to add a `use` statement f
 class AcceptanceTester extends \Codeception\Actor
 {
     use _generated\FunctionalTesterActions;
-    use _generated\PHPBrowserSteps;
+    use _generated\PHPBrowserGherkinSteps;
 
    /**
     * Define custom actions here
@@ -68,3 +68,60 @@ Scenario: methods provided by Codeception PHPBrowser module are available as Ghe
     When I am on page '/'
     Then I can see element 'body.home'
 ```
+
+The command is not limited to Codeception default modules only and will work with any custom module provided by other libraries or custom made for the project.
+While the command will make an extra effort to support modules in the `Codeception\Module` name space modules defined outside of that namespace will require the specification of  the fully qualified name to work:
+
+```shell
+codecept gherkin:steppify "Acme\Project\Tests\Modules\ModuleOne"
+```
+## Controlling the output methods
+
+While the command will try to be "smart" and helpful in generating the methods signatures it has, and will always have, limits.
+For this reason the method signature generation logic will take into account cascading definitions during the generation process:
+
+* if available use the configuration file
+* else available use the method documentation block
+* else fallback on using the built-in logic
+
+### Docblock tags
+The command supports two docblock tags to control the generation:
+
+* `@gherkin` - can be `no` to avoid the method from generating any step, or a comma separated list of step types (`given`, `when`, `then`).
+
+Please note that if [Gherkin step compatible step definitions](http://codeception.com/docs/07-BDD#Step-Definitions) are found in the method doc block than those will be used.
+
+### Configuration file
+The command supports a `--steps-config <file.yml>` option that allows specifying which methods and how steps should be generated.
+The file has the following format:
+
+```yaml
+modules:
+  PHPBrowser:
+    methods:
+      amOnPage:
+        generates: [given, when]
+        step: I visit page :page
+  Acme\Modules\SomeModule:
+    exclude:
+      - methodTwo
+    methods:
+      - haveAuthKeyInDatabase:
+        generates: [given]
+        step: I have authorization key :key in database
+  <module>:
+    exclude:
+      - <excluded method one>
+      - <excluded method two>
+    methods:
+      - <method name>:
+        generates: [given, when, then]
+        step: <step definition template>
+```
+
+## Options
+The command supports options meant to make its output controllable to a comfortable degree:
+
+* `--steps-config <file>` - see [the configuration file section](#configuration-file); allows specifying the path to a step definition generation configuration file.
+* `--prefix <prefix>` - allows specifying a string that should be appended to the generated step file name.
+

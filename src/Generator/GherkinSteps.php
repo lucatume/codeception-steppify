@@ -172,7 +172,7 @@ EOF;
     protected function shouldSkipMethod($module, $method)
     {
 
-        $module = '\\' .trim($module,'\\');
+        $module = '\\' . trim($module, '\\');
 
         $configSkipped = !empty($this->settings['steps-config']['modules'][$module]['exclude']) ?
             (array)$this->settings['steps-config']['modules'][$module]['exclude']
@@ -213,7 +213,14 @@ EOF;
         $reflectionMethod = new \ReflectionMethod($module, $method);
         $docComment = $reflectionMethod->getDocComment();
 
-        $module = '\\' .trim($module,'\\');
+        if (preg_match('/@(Giv|Wh|Th)en\\s/', $docComment)) {
+            $frags = explode(PHP_EOL, $docComment);
+            return implode(PHP_EOL, array_filter($frags, function ($line) {
+                return preg_match('/@(Giv|Wh|Th)en\\s/', $line);
+            }));
+        }
+
+        $module = '\\' . trim($module, '\\');
 
         $methodConfig = !empty($this->settings['steps-config']['modules'][$module]['methods'][$method]) ?
             $this->settings['steps-config']['modules'][$module]['methods'][$method] :

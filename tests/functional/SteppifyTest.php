@@ -515,7 +515,11 @@ EOF;
 
         /** @var Scenario $scenario */
         $scenario = $this->prophesize(Scenario::class);
-        $scenario->runStep(Prophecy\Argument::type(Action::class))->will(function (array $args) use (&$method, &$arguments) {
+        $scenario->runStep(Prophecy\Argument::type(Action::class))->will(function (array $args) use (
+            &$method,
+            &
+            $arguments
+        ) {
             $action = $args[0];
             $method = $action->getAction();
             $arguments = $action->getArgumentsAsString();
@@ -782,6 +786,44 @@ EOF;
 
         $this->assertTrue($ref->hasMethod('step_methodOne'));
         $this->assertFalse($ref->hasMethod('step_methodTwo'));
+    }
+
+    /**
+     * @test
+     * it should carry over step definition from original method
+     */
+    public function it_should_carry_over_step_definition_from_original_method()
+    {
+        $app = new Application();
+        $this->addCommand($app);
+        $command = $app->find('steppify');
+        $commandTester = new CommandTester($command);
+
+        $id = uniqid();
+
+        $commandTester->execute([
+            'command' => $command->getName(),
+            'module' => 'tad\Tests\Modules\ModuleSix',
+            '--postfix' => $id
+        ]);
+
+        $class = 'ModuleSixGherkinSteps' . $id;
+
+        require_once(Configuration::supportDir() . '_generated/' . $class . '.php');
+
+        $this->assertTrue(trait_exists('_generated\\' . $class));
+
+        $ref = new ReflectionClass('_generated\ModuleSixGherkinSteps' . $id);
+
+        $this->assertTrue($ref->hasMethod('step_haveSomeUser'));
+
+        $method = $ref->getMethod('step_haveSomeUser');
+        $docBlock = $method->getDocComment();
+
+        $this->assertContains('@Given /There is one user in the database/', $docBlock);
+        $this->assertNotContains('@Given /I have some user/', $docBlock);
+        $this->assertNotContains('@When /I have some user/', $docBlock);
+        $this->assertNotContains('@Then /I have some user/', $docBlock);
     }
 
     protected function _before()
