@@ -6,6 +6,7 @@ namespace tad\Codeception\Command;
 use Codeception\Command\Shared\Config;
 use Codeception\Command\Shared\FileSystem;
 use Codeception\Configuration;
+use Codeception\CustomCommandInterface;
 use Codeception\Exception\ConfigurationException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -15,14 +16,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 use tad\Codeception\Command\Generator\GherkinSteps;
 
-class Steppify extends Command
+class Steppify extends Command implements CustomCommandInterface
 {
     use Config;
     use FileSystem;
 
     protected function configure()
     {
-        $this->addArgument('module', InputArgument::REQUIRED,
+        $this
+            ->setDescription('Create step definitions from modules')
+            ->addArgument('module', InputArgument::REQUIRED,
             'The class name of the module from which the Gherkin steps should be generated;')
             ->addOption('postfix', null, InputOption::VALUE_REQUIRED,
                 'A postfix that should be appended to the the trait file name', '')
@@ -90,5 +93,15 @@ class Steppify extends Command
     {
         $frags = explode('\\', $module);
         return end($frags);
+    }
+
+    /**
+     * returns the name of the command
+     *
+     * @return string
+     */
+    public static function getCommandName()
+    {
+        return 'gherkin:steppify';
     }
 }

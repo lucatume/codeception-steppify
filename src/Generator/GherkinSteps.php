@@ -116,12 +116,14 @@ EOF;
         $this->settings = $settings;
         $this->module = $module;
 
-        $this->di = new Di();
-        $this->moduleContainer = new ModuleContainer($this->di, $settings);
+        $ref = new \ReflectionClass($module);
 
-        $this->moduleContainer->create($module);
+        $publicMethods = $ref->getMethods(\ReflectionMethod::IS_PUBLIC);
 
-        $this->actions = $this->moduleContainer->getActions();
+        $this->actions = array_filter(array_map(function (\ReflectionMethod $method) {
+            return preg_match('/^_/', $method->getName()) ?
+                false : $method->getName();
+        }, $publicMethods));
     }
 
     /**
@@ -151,18 +153,18 @@ EOF;
     {
         // generate the method template
         $methods = [];
-        foreach ($this->actions as $method => $module) {
+        foreach ($this->actions as $method) {
 
-            if ($this->shouldSkipMethod($module, $method)) {
+            if ($this->shouldSkipMethod($this->module, $method)) {
                 continue;
             }
 
             $methods[] = (new Template($this->methodTemplate))
-                ->place('module', ltrim($module, '\\'))
+                ->place('module', ltrim($this->module, '\\'))
                 ->place('method', $method)
-                ->place('gherkinDoc', $this->getGherkingDoc($module, $method))
+                ->place('gherkinDoc', $this->getGherkingDoc($this->module, $method))
                 ->place('action', 'step_' . $method)
-                ->place('params', $this->getParams($module, $method))
+                ->place('params', $this->getParams($this->module, $method))
                 ->produce();
         }
 
