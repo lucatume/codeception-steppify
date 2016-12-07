@@ -1,0 +1,21 @@
+{
+    "name": "lucatume/codeception-steppify",
+    "description": "Generate Gherkin steps from Codeception Modules.",
+    "type": "library",
+    "require": {
+        "codeception/codeception": "^2.2"
+    },
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Luca Tumedei",
+            "email": "luca@theaveragedev.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "tad\\Codeception\\Command\\": "src/"
+        }
+    }
+}
