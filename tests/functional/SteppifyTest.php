@@ -477,7 +477,8 @@ EOF;
         $first = $parameters[0];
         $this->assertEquals(TableNode::class, $first->getClass()->name);
 
-        $method = $arguments = '';
+        $method = '';
+        $arguments = [];
 
         $instance = $this->getInstanceForTrait($trait, $id, $method, $arguments);
 
@@ -490,7 +491,7 @@ EOF;
         $instance->step_doSomethingWithArray($table);
 
         $this->assertEquals('doSomethingWithArray', $method);
-        $expected = json_encode([
+        $expected = array_map('json_encode', [
             ['keyOne' => 'foo', 'keyTwo' => 'baz', 'keyThree' => 'bar'],
             ['keyOne' => 23, 'keyTwo' => 'foo', 'keyThree' => 'baz'],
         ]);
@@ -522,7 +523,7 @@ EOF;
         ) {
             $action = $args[0];
             $method = $action->getAction();
-            $arguments = $action->getArgumentsAsString();
+            $arguments[] = $action->getArgumentsAsString();
         });
 
         return $instance = new $className($scenario->reveal());
