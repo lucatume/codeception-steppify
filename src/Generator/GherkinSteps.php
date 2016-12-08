@@ -78,8 +78,8 @@ EOF;
     }
 EOF;
 
-    protected $stopWords = ['see', 'have', 'and', 'or', 'with', 'to', 'in'];
-    protected $jumpingStopWords = ['see', 'have', 'with', 'in'];
+    protected $stopWords = ['see', 'have', 'and', 'or', 'with', 'to', 'in', 'on'];
+    protected $jumpingStopWords = ['see', 'have', 'with', 'in', 'on'];
 
     /**
      * @var string

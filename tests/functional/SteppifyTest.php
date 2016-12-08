@@ -826,6 +826,49 @@ EOF;
         $this->assertNotContains('@Then /I have some user/', $docBlock);
     }
 
+    public function methodsAndNotations()
+    {
+        return [
+            ['amOnPage', 'I am on page :page'],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider methodsAndNotations
+     * it should generate good defaults
+     */
+    public function it_should_generate_good_defaults($methodName, $expected)
+    {
+        $app = new Application();
+        $this->addCommand($app);
+        $command = $app->find('steppify');
+        $commandTester = new CommandTester($command);
+
+        $id = uniqid();
+
+        $commandTester->execute([
+            'command' => $command->getName(),
+            'module' => 'tad\Tests\Modules\ModuleSeven',
+            '--postfix' => $id
+        ]);
+
+        $class = 'ModuleSevenGherkinSteps' . $id;
+
+        require_once(Configuration::supportDir() . '_generated/' . $class . '.php');
+
+        $this->assertTrue(trait_exists('_generated\\' . $class));
+
+        $ref = new ReflectionClass('_generated\ModuleSevenGherkinSteps' . $id);
+
+        $this->assertTrue($ref->hasMethod('step_' . $methodName));
+
+        $method = $ref->getMethod('step_' . $methodName);
+        $docBlock = $method->getDocComment();
+
+        $this->assertContains('@Given /' . $expected . '/', $docBlock);
+    }
+
     protected function _before()
     {
         $this->testModules = new FilesystemIterator(codecept_data_dir('modules'),
