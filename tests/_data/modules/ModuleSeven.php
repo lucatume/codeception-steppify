@@ -9,4 +9,8 @@ class ModuleSeven extends Module
     {
 
     }
+
+    public function havePostInDatabase(array $data = [])
+    {
+    }
 }

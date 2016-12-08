@@ -368,21 +368,26 @@ EOF;
                         $parameterNamesAndStopwords[$parameterName]
                         : 'and';
                     $stopWordAndParameterName = $stopWord . ' ' . $parameterName;
-                } else {
+                } elseif (!$parameter->isArray()) {
                     $stopWordAndParameterName = $parameterName;
+                } else {
+                    $stopWordAndParameterName = '';
                 }
 
-                if (!$parameter->isDefaultValueAvailable()) {
+                if (!$parameter->isDefaultValueAvailable() || $parameter->isArray()) {
                     $lineFrags = explode(' ', $lines[$lastLineIndex]);
                     $lineLastWord = end($lineFrags);
                     if (!in_array($lineLastWord, $this->stopWords)
+                        && !$parameter->isArray()
                         && $parameterPosition === 0
                         && !in_array($stopWord, $this->jumpingStopWords)
                     ) {
                         $resultLine = sprintf('%s :%s', $lines[$lastLineIndex], $parameterName);
-                    } else {
+                    } elseif (!$parameter->isArray()) {
                         $resultLine = sprintf('%s %s :%s', $lines[$lastLineIndex], $stopWordAndParameterName,
                             $parameterName);
+                    } else {
+                        $resultLine = $lines[$lastLineIndex];
                     }
                     $lines[$lastLineIndex] = $lastLine = $resultLine;
                 } else {

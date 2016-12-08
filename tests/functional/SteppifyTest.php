@@ -829,7 +829,12 @@ EOF;
     public function methodsAndNotations()
     {
         return [
-            ['amOnPage', 'I am on page :page'],
+            ['amOnPage', 'I am on page :page', false],
+            [
+                'havePostInDatabase',
+                'I have post in database',
+                [' :data']
+            ]
         ];
     }
 
@@ -838,7 +843,7 @@ EOF;
      * @dataProvider methodsAndNotations
      * it should generate good defaults
      */
-    public function it_should_generate_good_defaults($methodName, $expected)
+    public function it_should_generate_good_defaults($methodName, $expected, $notExpected = null)
     {
         $app = new Application();
         $this->addCommand($app);
@@ -867,6 +872,11 @@ EOF;
         $docBlock = $method->getDocComment();
 
         $this->assertContains('@Given /' . $expected . '/', $docBlock);
+        if (!empty($notExpected)) {
+            foreach ((array)$notExpected as $ne) {
+                $this->assertNotRegExp('#@Given /.*' . $ne . '.*/#', $docBlock);
+            }
+        }
     }
 
     protected function _before()
