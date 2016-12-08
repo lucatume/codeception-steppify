@@ -36,7 +36,7 @@ EOF;
      * @see \{{module}}::{{method}}()
      */
     public function {{action}}({{params}}) {
-        \$args = \$this->_convertTableNodesToArrays(func_get_args(), \$iterations);
+        \$args = steppify_convertTableNodesToArrays(func_get_args(), \$iterations);
         
         if(!empty(\$iterations)) {
             \$returnValues = [];
