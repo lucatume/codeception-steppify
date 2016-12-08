@@ -11,13 +11,14 @@
  *              there are no TableNode arguments among the arguments, will be set to
  *              an array of function call arguments if found.
  */
-public function steppify_convertTableNodesToArrays(array $args, &$iterations = []) {
-    foreach($args as $key => $value) {
-        if(is_a($value, 'Behat\Gherkin\Node\TableNode')){
+function steppify_convertTableNodesToArrays(array $args, &$iterations = [])
+{
+    foreach ($args as $key => $value) {
+        if (is_a($value, 'Behat\Gherkin\Node\TableNode')) {
             $rows = $value->getRows();
             $keys = array_shift($rows);
-            $array_value = array_map(function(array $row) use ($keys) {
-                return array_combine($keys,$row);
+            $array_value = array_map(function (array $row) use ($keys) {
+                return array_combine($keys, $row);
             }, $rows);
 
             $iterations[] = array_replace($args, [$key => $array_value]);
