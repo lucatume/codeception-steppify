@@ -21,7 +21,11 @@ function steppify_convertTableNodesToArrays(array $args, &$iterations = [])
                 return array_combine($keys, $row);
             }, $rows);
 
-            $iterations[] = array_replace($args, [$key => $array_value]);
+            $iterations = [];
+
+            foreach ($array_value as $arr) {
+                $iterations[] = array_replace($args, [$key => $arr]);
+            }
         }
     }
 

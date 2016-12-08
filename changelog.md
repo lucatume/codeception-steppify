@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - missing support for `on` stopword
 - force rewrite on steps file by default
 - move function to convert table nodes to arrays to `src/functions.php` file
+- step definition generation for better carry over and parameter support
 
 ## 1.0.0 - 2016-12-07
 ### Added
