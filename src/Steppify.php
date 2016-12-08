@@ -65,7 +65,7 @@ class Steppify extends Command implements CustomCommandInterface
             ) . ucfirst($settings['name']) . 'GherkinSteps' . $postfix;
         $file .= '.php';
 
-        return $this->save($file, $content);
+        return $this->save($file, $content, true);
     }
 
     /**
