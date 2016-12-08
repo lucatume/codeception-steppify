@@ -3,8 +3,10 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+### Fixed
+- missing support for `on` stopword
 
-## 1.0.0 - unreleased
+## 1.0.0 - 2016-12-07
 ### Added
 - this changelog
 - initial commit
