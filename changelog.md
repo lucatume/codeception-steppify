@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+
+##[1.0.1] 2016-12-08
 ### Fixed
 - missing support for `on` stopword
 - force rewrite on steps file by default
@@ -14,4 +16,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - this changelog
 - initial commit
 
-[unreleased]: https://github.com/lucatume/codeception-steppify/compare/1.0.0...HEAD
+[unreleased]: https://github.com/lucatume/codeception-steppify/compare/1.0.1...HEAD
+[1.0.1]: https://github.com/lucatume/codeception-steppify/compare/1.0.0...1.0.1
+
