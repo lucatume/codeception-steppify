@@ -246,7 +246,7 @@ EOF;
             $generates = (array)$methodConfig['generates'];
             array_walk($generates, function ($generatedStep) use ($methodConfig, &$lines) {
                 $stepLines = array_map(function ($stepTemplate) use ($generatedStep) {
-                    return '* @' . ucfirst($generatedStep) . ' /' . trim($stepTemplate, '/') . '/';
+                    return '* @' . ucfirst($generatedStep) . ' ' . $stepTemplate;
                 }, (array)$methodConfig['step']);
                 $lines = array_merge($lines, $stepLines);
             });
@@ -256,9 +256,6 @@ EOF;
                 $wordsWithoutStopwords);
             $lines = $this->buildGherkinLinesForSteps($steps, $parameters, $wordsWithoutStopwords,
                 $parameterNamesAndStopwords);
-            $lines = array_map(function ($line) {
-                return $line . '/';
-            }, $lines);
         }
 
         return $lines;
@@ -321,7 +318,7 @@ EOF;
         foreach ($steps as $step) {
             $lastLineIndex = empty($lines) ? 0 : count($lines);
 
-            $lastLine = $lines[$lastLineIndex] = sprintf('* @%s /I %s', ucfirst(trim($step)),
+            $lastLine = $lines[$lastLineIndex] = sprintf('* @%s I %s', ucfirst(trim($step)),
                 implode(' ', $wordsWithoutStopwords));
 
             foreach ($parameters as $parameter) {

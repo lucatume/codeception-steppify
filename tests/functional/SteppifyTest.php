@@ -216,9 +216,9 @@ EOF;
         $reflectedMethod = $ref->getMethod('step_doSomething');
         $methodDockBlock = $reflectedMethod->getDocComment();
 
-        $this->assertContains('@Given /I do something/', $methodDockBlock);
-        $this->assertContains('@When /I do something/', $methodDockBlock);
-        $this->assertContains('@Then /I do something/', $methodDockBlock);
+        $this->assertContains('@Given I do something', $methodDockBlock);
+        $this->assertContains('@When I do something', $methodDockBlock);
+        $this->assertContains('@Then I do something', $methodDockBlock);
     }
 
     /**
@@ -253,9 +253,9 @@ EOF;
         $reflectedMethod = $ref->getMethod('step_doSomethingTwo');
         $methodDockBlock = $reflectedMethod->getDocComment();
 
-        $this->assertContains('@Given /I do something two/', $methodDockBlock);
-        $this->assertNotContains('@When /I do something two/', $methodDockBlock);
-        $this->assertNotContains('@Then /I do something two/', $methodDockBlock);
+        $this->assertContains('@Given I do something two', $methodDockBlock);
+        $this->assertNotContains('@When I do something two', $methodDockBlock);
+        $this->assertNotContains('@Then I do something two', $methodDockBlock);
     }
 
     /**
@@ -290,9 +290,9 @@ EOF;
         $reflectedMethod = $ref->getMethod('step_doSomethingThree');
         $methodDockBlock = $reflectedMethod->getDocComment();
 
-        $this->assertNotContains('@Given /I do something three/', $methodDockBlock);
-        $this->assertContains('@When /I do something three/', $methodDockBlock);
-        $this->assertNotContains('@Then /I do something three/', $methodDockBlock);
+        $this->assertNotContains('@Given I do something three', $methodDockBlock);
+        $this->assertContains('@When I do something three', $methodDockBlock);
+        $this->assertNotContains('@Then I do something three', $methodDockBlock);
     }
 
     /**
@@ -327,9 +327,9 @@ EOF;
         $reflectedMethod = $ref->getMethod('step_doSomethingFour');
         $methodDockBlock = $reflectedMethod->getDocComment();
 
-        $this->assertNotContains('@Given /I do something four/', $methodDockBlock);
-        $this->assertNotContains('@When /I do something four/', $methodDockBlock);
-        $this->assertContains('@Then /I do something four/', $methodDockBlock);
+        $this->assertNotContains('@Given I do something four', $methodDockBlock);
+        $this->assertNotContains('@When I do something four', $methodDockBlock);
+        $this->assertContains('@Then I do something four', $methodDockBlock);
     }
 
     /**
@@ -560,7 +560,7 @@ EOF;
         $reflectedMethod = $ref->getMethod('step_seeElement');
         $methodDockBlock = $reflectedMethod->getDocComment();
 
-        $this->assertContains('@Then /I see element :name/', $methodDockBlock);
+        $this->assertContains('@Then I see element :name', $methodDockBlock);
     }
 
     /**
@@ -595,7 +595,7 @@ EOF;
         $reflectedMethod = $ref->getMethod('step_seeElementWithColor');
         $methodDockBlock = $reflectedMethod->getDocComment();
 
-        $this->assertContains('@Then /I see element :name with color :color/', $methodDockBlock);
+        $this->assertContains('@Then I see element :name with color :color', $methodDockBlock);
     }
 
     /**
@@ -639,8 +639,8 @@ EOF;
 
         // public function seeElementInContext($context, $text = null)
 
-        $this->assertContains('@Then /I see element in context :context/', $methodDockBlock);
-        $this->assertContains('@Then /I see element in context :context and text :text/', $methodDockBlock);
+        $this->assertContains('@Then I see element in context :context', $methodDockBlock);
+        $this->assertContains('@Then I see element in context :context and text :text', $methodDockBlock);
     }
 
     /**
@@ -676,7 +676,7 @@ EOF;
 
         $methodDockBlock = $reflectedMethod->getDocComment();
 
-        $this->assertContains('@Given /I  have element :element with color :color and size :size/', $methodDockBlock);
+        $this->assertContains('@Given I  have element :element with color :color and size :size', $methodDockBlock);
     }
 
     /**
@@ -712,9 +712,9 @@ EOF;
 
         $methodDockBlock = $reflectedMethod->getDocComment();
 
-        $this->assertContains('@Given /I  have shape :shape/', $methodDockBlock);
-        $this->assertContains('@Given /I  have shape :shape with color :color/', $methodDockBlock);
-        $this->assertContains('@Given /I  have shape :shape with color :color and size :size/', $methodDockBlock);
+        $this->assertContains('@Given I  have shape :shape', $methodDockBlock);
+        $this->assertContains('@Given I  have shape :shape with color :color', $methodDockBlock);
+        $this->assertContains('@Given I  have shape :shape with color :color and size :size', $methodDockBlock);
     }
 
     /**
@@ -751,9 +751,9 @@ EOF;
 
         $methodDockBlock = $reflectedMethod->getDocComment();
 
-        $this->assertContains('@Given /I have element :element in database/', $methodDockBlock);
-        $this->assertNotContains('@When /I have element :element in database/', $methodDockBlock);
-        $this->assertNotContains('@Then /I have element :element in database/', $methodDockBlock);
+        $this->assertContains('@Given I have element :element in database', $methodDockBlock);
+        $this->assertNotContains('@When I have element :element in database', $methodDockBlock);
+        $this->assertNotContains('@Then I have element :element in database', $methodDockBlock);
     }
 
     /**
@@ -816,14 +816,23 @@ EOF;
         $ref = new ReflectionClass('_generated\ModuleSixGherkinSteps' . $id);
 
         $this->assertTrue($ref->hasMethod('step_haveSomeUser'));
+        $this->assertTrue($ref->hasMethod('step_haveSomeRegex'));
 
         $method = $ref->getMethod('step_haveSomeUser');
         $docBlock = $method->getDocComment();
 
-        $this->assertContains('@Given /There is one user in the database/', $docBlock);
-        $this->assertNotContains('@Given /I have some user/', $docBlock);
-        $this->assertNotContains('@When /I have some user/', $docBlock);
-        $this->assertNotContains('@Then /I have some user/', $docBlock);
+        $this->assertContains('@Given There is one user in the database', $docBlock);
+        $this->assertNotContains('@Given I have some user', $docBlock);
+        $this->assertNotContains('@When I have some user', $docBlock);
+        $this->assertNotContains('@Then I have some user', $docBlock);
+
+        $method = $ref->getMethod('step_haveSomeRegex');
+        $docBlock = $method->getDocComment();
+
+        $this->assertContains('@Given /I have a regex "([^"]*)" set up/', $docBlock);
+        $this->assertNotContains('@Given I have some regex', $docBlock);
+        $this->assertNotContains('@When I have some regex', $docBlock);
+        $this->assertNotContains('@Then I have some regex', $docBlock);
     }
 
     public function methodsAndNotations()
@@ -871,10 +880,10 @@ EOF;
         $method = $ref->getMethod('step_' . $methodName);
         $docBlock = $method->getDocComment();
 
-        $this->assertContains('@Given /' . $expected . '/', $docBlock);
+        $this->assertContains('@Given ' . $expected, $docBlock);
         if (!empty($notExpected)) {
             foreach ((array)$notExpected as $ne) {
-                $this->assertNotRegExp('#@Given /.*' . $ne . '.*/#', $docBlock);
+                $this->assertNotRegExp('#@Given .*' . $ne . '.*#', $docBlock);
             }
         }
     }
