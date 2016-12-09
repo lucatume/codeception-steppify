@@ -474,9 +474,9 @@ EOF;
     {
         $method = new \ReflectionMethod($module, $method);
         $parameters = $method->getParameters();
-        $convert = count(array_filter($parameters), function (\ReflectionParameter $p) {
+        $convert = count(array_filter($parameters, function (\ReflectionParameter $p) {
                 return $p->isArray();
-            }) > 0;
+            })) > 0;
 
         return $convert ? PHP_EOL . $this->conversionTemplate : '';
     }
