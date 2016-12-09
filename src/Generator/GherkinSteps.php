@@ -27,15 +27,7 @@ trait {{name}}GherkinSteps{{postfix}}
 
 EOF;
 
-    protected $methodTemplate = <<<EOF
-    /**
-     * [!] Method is generated from steppify task. Documentation taken from corresponding module.
-     *
-     {{gherkinDoc}}
-     *
-     * @see \{{module}}::{{method}}()
-     */
-    public function {{action}}({{params}}) {
+    protected $conversionTemplate = <<< EOF
         \$args = steppify_convertTableNodesToArrays(func_get_args(), \$iterations);
         
         if(!empty(\$iterations)) {
@@ -47,6 +39,17 @@ EOF;
             return \$returnValues;
         }
         
+EOF;
+
+    protected $methodTemplate = <<<EOF
+    /**
+     * [!] Method is generated from steppify task. Documentation taken from corresponding module.
+     *
+     {{gherkinDoc}}
+     *
+     * @see \{{module}}::{{method}}()
+     */
+    public function {{action}}({{params}}) {{{argsConversion}}
         return \$this->getScenario()->runStep(new \Codeception\Step\Action('{{method}}', \$args));
     }
 EOF;
@@ -135,6 +138,7 @@ EOF;
             $methods[] = (new Template($this->methodTemplate))
                 ->place('module', ltrim($this->module, '\\'))
                 ->place('method', $method)
+                ->place('argsConversion', $this->getArgsConversion($this->module, $method))
                 ->place('gherkinDoc', $this->getGherkingDoc($this->module, $method))
                 ->place('action', 'step_' . $method)
                 ->place('params', $this->getParams($this->module, $method))
@@ -464,5 +468,16 @@ EOF;
         $settings['steps-config']['modules'] = $normalized;
 
         return $settings;
+    }
+
+    protected function getArgsConversion($module, $method)
+    {
+        $method = new \ReflectionMethod($module, $method);
+        $parameters = $method->getParameters();
+        $convert = count(array_filter($parameters), function (\ReflectionParameter $p) {
+                return $p->isArray();
+            }) > 0;
+
+        return $convert ? PHP_EOL . $this->conversionTemplate : '';
     }
 }
