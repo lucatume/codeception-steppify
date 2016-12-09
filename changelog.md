@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+##[1.0.2] 2016-12-09
+### Fixed
+- avoid argument conversion when there are no array arguments in the method signature
+
 ##[1.0.1] 2016-12-08
 ### Fixed
 - missing support for `on` stopword
