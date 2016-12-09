@@ -49,7 +49,8 @@ EOF;
      *
      * @see \{{module}}::{{method}}()
      */
-    public function {{action}}({{params}}) {{{argsConversion}}
+    public function {{action}}({{params}}) {
+        {{argsConversion}}
         return \$this->getScenario()->runStep(new \Codeception\Step\Action('{{method}}', \$args));
     }
 EOF;
@@ -478,6 +479,6 @@ EOF;
                 return $p->isArray();
             })) > 0;
 
-        return $convert ? PHP_EOL . $this->conversionTemplate : '';
+        return $convert ? $this->conversionTemplate : '$args = func_get_args();';
     }
 }
