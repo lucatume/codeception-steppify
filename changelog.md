@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+##[1.0.3] 2016-12-12
+### Fixed
+- issue where not using a `\Codeception\Module\<Module>` fully qualified in config file would cause the module configuration to be ignored.
+
 ##[1.0.2] 2016-12-09
 ### Fixed
 - avoid argument conversion when there are no array arguments in the method signature
@@ -20,6 +24,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - this changelog
 - initial commit
 
-[unreleased]: https://github.com/lucatume/codeception-steppify/compare/1.0.1...HEAD
+[unreleased]: https://github.com/lucatume/codeception-steppify/compare/1.0.3...HEAD
+[1.0.3]: https://github.com/lucatume/codeception-steppify/compare/1.0.2...1.0.3
+[1.0.2]: https://github.com/lucatume/codeception-steppify/compare/1.0.1...1.0.2
 [1.0.1]: https://github.com/lucatume/codeception-steppify/compare/1.0.0...1.0.1
 
