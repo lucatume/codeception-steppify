@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased][unreleased]
 
 ##[1.0.3] 2016-12-12
+### Added
+- feedback line when using configuration file
+
 ### Fixed
 - issue where not using a `\Codeception\Module\<Module>` fully qualified in config file would cause the module configuration to be ignored.
 

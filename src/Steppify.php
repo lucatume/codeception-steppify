@@ -7,7 +7,6 @@ use Codeception\Command\Shared\Config;
 use Codeception\Command\Shared\FileSystem;
 use Codeception\Configuration;
 use Codeception\CustomCommandInterface;
-use Codeception\Exception\ConfigurationException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,6 +19,16 @@ class Steppify extends Command implements CustomCommandInterface
 {
     use Config;
     use FileSystem;
+
+    /**
+     * returns the name of the command
+     *
+     * @return string
+     */
+    public static function getCommandName()
+    {
+        return 'gherkin:steppify';
+    }
 
     protected function configure()
     {
@@ -57,6 +66,10 @@ class Steppify extends Command implements CustomCommandInterface
 
         $output->writeln("<info>Generating Gherkin steps from module '{$module}...'</info>");
 
+        if (!empty($settings['steps-config'])) {
+            $output->writeln("<info>Reading configuration for module from '{$input->getOption('steps-config')}'</info>");
+        }
+
         $content = $generator->produce();
 
         $file = $this->buildPath(
@@ -66,6 +79,16 @@ class Steppify extends Command implements CustomCommandInterface
         $file .= '.php';
 
         return $this->save($file, $content, true);
+    }
+
+    /**
+     * @param $module
+     * @return string
+     */
+    protected function getClassNameFromModule($module)
+    {
+        $frags = explode('\\', $module);
+        return end($frags);
     }
 
     /**
@@ -83,25 +106,5 @@ class Steppify extends Command implements CustomCommandInterface
             : [];
 
         return $stepsConfig;
-    }
-
-    /**
-     * @param $module
-     * @return string
-     */
-    protected function getClassNameFromModule($module)
-    {
-        $frags = explode('\\', $module);
-        return end($frags);
-    }
-
-    /**
-     * returns the name of the command
-     *
-     * @return string
-     */
-    public static function getCommandName()
-    {
-        return 'gherkin:steppify';
     }
 }

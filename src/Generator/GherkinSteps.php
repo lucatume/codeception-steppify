@@ -6,6 +6,7 @@ namespace tad\Codeception\Command\Generator;
 use Codeception\Lib\Di;
 use Codeception\Lib\ModuleContainer;
 use Codeception\Util\Template;
+use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlock\Tags\Generic;
 use phpDocumentor\Reflection\DocBlockFactory;
 
@@ -123,6 +124,45 @@ EOF;
             ->produce();
     }
 
+    protected function normalizeModuleSettings(array $settings)
+    {
+        if (empty($settings['steps-config']['modules'])) {
+            return $settings;
+        }
+
+        $normalized = [];
+        foreach ($settings['steps-config']['modules'] as $key => $value) {
+            $normalized['\\' . trim($key, '\\')] = $value;
+        }
+
+        $settings['steps-config']['modules'] = $normalized;
+
+        return $settings;
+    }
+
+    protected function fullyQualifyModuleNames(array $settings)
+    {
+        if (empty($settings['steps-config']['modules'])) {
+            return $settings;
+        }
+
+        $modules = $settings['steps-config']['modules'];
+        $settings['steps-config']['modules'] = [];
+        foreach ($modules as $module => $moduleConfig) {
+            if (class_exists('\\Codeception\\Module' . $module)) {
+                $module = '\\Codeception\\Module' . $module;
+            }
+            $settings['steps-config']['modules'][$module] = $moduleConfig;
+        }
+
+        return $settings;
+    }
+
+    protected function generateHash()
+    {
+        return (md5(serialize($this->module) . serialize($this->settings)));
+    }
+
     /**
      * @return string
      * @gherkin given, when, then
@@ -182,6 +222,17 @@ EOF;
         return preg_match('/(N|n)(o|O)/', $tag->getDescription()->render());
     }
 
+    protected function getArgsConversion($module, $method)
+    {
+        $method = new \ReflectionMethod($module, $method);
+        $parameters = $method->getParameters();
+        $convert = count(array_filter($parameters, function (\ReflectionParameter $p) {
+                return $p->isArray();
+            })) > 0;
+
+        return $convert ? $this->conversionTemplate : '$args = func_get_args();';
+    }
+
     /**
      * @param string $module
      * @param \ReflectionMethod $method
@@ -214,6 +265,31 @@ EOF;
         }
 
         return $this->generateGherkinStepsNotations($steps, $module, $method, $methodConfig);
+    }
+
+    /**
+     * @param string $docComment
+     * @param DocBlockFactory $docBlockFactory
+     * @return array
+     */
+    protected function getStepsFromMethodDocBlock($docComment, $docBlockFactory)
+    {
+        $steps = ['given', 'when', 'then'];
+
+        if (!empty($docComment)) {
+            /** @var DocBlock $docBlock */
+            $docBlock = $docBlockFactory->create($docComment);
+            $gherkinTags = $docBlock->getTagsByName('gherkin');
+
+            if (!empty($gherkinTags)) {
+                /** @var Generic $gherkingTag */
+                $gherkingTag = reset($gherkinTags);
+                $steps = preg_split('/\\s*,\\s*/', $gherkingTag->getDescription()->render());
+                return $steps;
+            }
+            return $steps;
+        }
+        return $steps;
     }
 
     /**
@@ -394,11 +470,6 @@ EOF;
         return implode(', ', array_map([$this, 'getEntryForParameter'], $params));
     }
 
-    protected function generateHash()
-    {
-        return (md5(serialize($this->module) . serialize($this->settings)));
-    }
-
     /**
      * @param \ReflectionParameter $parameter
      *
@@ -430,74 +501,5 @@ EOF;
 
             return sprintf('%s $%s = %s', $type, $name, $defaultValue);
         }
-    }
-
-    /**
-     * @param $docComment
-     * @param $docBlockFactory
-     * @return array
-     */
-    protected function getStepsFromMethodDocBlock($docComment, $docBlockFactory)
-    {
-        $steps = ['given', 'when', 'then'];
-
-        if (!empty($docComment)) {
-            $docBlock = $docBlockFactory->create($docComment);
-            $gherkinTags = $docBlock->getTagsByName('gherkin');
-
-            if (!empty($gherkinTags)) {
-                /** @var Generic $gherkingTag */
-                $gherkingTag = reset($gherkinTags);
-                $steps = preg_split('/\\s*,\\s*/', $gherkingTag->getDescription()->render());
-                return $steps;
-            }
-            return $steps;
-        }
-        return $steps;
-    }
-
-    protected function normalizeModuleSettings(array $settings)
-    {
-        if (empty($settings['steps-config']['modules'])) {
-            return $settings;
-        }
-
-        $normalized = [];
-        foreach ($settings['steps-config']['modules'] as $key => $value) {
-            $normalized['\\' . trim($key, '\\')] = $value;
-        }
-
-        $settings['steps-config']['modules'] = $normalized;
-
-        return $settings;
-    }
-
-    protected function getArgsConversion($module, $method)
-    {
-        $method = new \ReflectionMethod($module, $method);
-        $parameters = $method->getParameters();
-        $convert = count(array_filter($parameters, function (\ReflectionParameter $p) {
-                return $p->isArray();
-            })) > 0;
-
-        return $convert ? $this->conversionTemplate : '$args = func_get_args();';
-    }
-
-    protected function fullyQualifyModuleNames(array $settings)
-    {
-        if (empty($settings['steps-config']['modules'])) {
-            return $settings;
-        }
-
-        $modules = $settings['steps-config']['modules'];
-        $settings['steps-config']['modules'] = [];
-        foreach ($modules as $module => $moduleConfig) {
-            if (class_exists('\\Codeception\\Module' . $module)) {
-                $module = '\\Codeception\\Module' . $module;
-            }
-            $settings['steps-config']['modules'][$module] = $moduleConfig;
-        }
-
-        return $settings;
     }
 }
