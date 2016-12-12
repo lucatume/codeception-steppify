@@ -2,6 +2,8 @@ Steppify
 
 *Generate Gherkin steps from Codeception modules.*
 
+[![Build Status](https://travis-ci.org/lucatume/codeception-steppify.svg?branch=master)](https://travis-ci.org/lucatume/codeception-steppify)
+
 ## Installation
 Install this package using [Composer](https://getcomposer.org/):
 
