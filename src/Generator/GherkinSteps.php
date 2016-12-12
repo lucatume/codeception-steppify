@@ -112,6 +112,7 @@ EOF;
 
 
         $this->settings = $this->normalizeModuleSettings($this->settings);
+        $this->settings = $this->fullyQualifyModuleNames($this->settings);
 
         return (new Template($this->template))
             ->place('hash', $this->generateHash())
@@ -480,5 +481,23 @@ EOF;
             })) > 0;
 
         return $convert ? $this->conversionTemplate : '$args = func_get_args();';
+    }
+
+    protected function fullyQualifyModuleNames(array $settings)
+    {
+        if (empty($settings['steps-config']['modules'])) {
+            return $settings;
+        }
+
+        $modules = $settings['steps-config']['modules'];
+        $settings['steps-config']['modules'] = [];
+        foreach ($modules as $module => $moduleConfig) {
+            if (class_exists('\\Codeception\\Module' . $module)) {
+                $module = '\\Codeception\\Module' . $module;
+            }
+            $settings['steps-config']['modules'][$module] = $moduleConfig;
+        }
+
+        return $settings;
     }
 }
