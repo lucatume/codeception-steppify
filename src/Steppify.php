@@ -15,96 +15,98 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 use tad\Codeception\Command\Generator\GherkinSteps;
 
-class Steppify extends Command implements CustomCommandInterface
-{
-    use Config;
-    use FileSystem;
+class Steppify extends Command implements CustomCommandInterface {
 
-    /**
-     * returns the name of the command
-     *
-     * @return string
-     */
-    public static function getCommandName()
-    {
-        return 'gherkin:steppify';
-    }
+	use Config;
+	use FileSystem;
 
-    protected function configure()
-    {
-        $this
-            ->setDescription('Create step definitions from modules')
-            ->addArgument('module', InputArgument::REQUIRED,
-            'The class name of the module from which the Gherkin steps should be generated;')
-            ->addOption('postfix', null, InputOption::VALUE_REQUIRED,
-                'A postfix that should be appended to the the trait file name', '')
-            ->addOption('steps-config', null, InputOption::VALUE_REQUIRED,
-                'The configuration file that should be used to generate the Gherkin steps', '');
-    }
+	/**
+	 * returns the name of the command
+	 *
+	 * @return string
+	 */
+	public static function getCommandName() {
+		return 'gherkin:steppify';
+	}
 
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        $module = $input->getArgument('module');
+	protected function configure() {
+		$this
+			->setDescription('Create step definitions from modules')
+			->addArgument('module', InputArgument::REQUIRED,
+				'The class name of the module from which the Gherkin steps should be generated;')
+			->addOption('postfix', null, InputOption::VALUE_REQUIRED,
+				'A postfix that should be appended to the the trait file name', '')
+			->addOption('steps-config', null, InputOption::VALUE_REQUIRED,
+				'The configuration file that should be used to generate the Gherkin steps', '');
+	}
 
-        if (!class_exists($module)) {
-            $module = '\\Codeception\\Module\\' . $module;
-            if (!class_exists($module)) {
-                $output->writeln("<error>Module '$module' does not exist.</error>");
-                return -1;
-            }
-        }
+	protected function execute(InputInterface $input, OutputInterface $output) {
+		$module = $input->getArgument('module');
 
-        $postfix = $input->getOption('postfix');
+		if (!class_exists($module)) {
+			$module = '\\Codeception\\Module\\' . $module;
+			if (!class_exists($module)) {
+				$output->writeln("<error>Module '$module' does not exist.</error>");
+				return -1;
+			}
+		}
 
-        $settings = [];
-        $settings['name'] = $this->getClassNameFromModule($module);
-        $settings['namespace'] = '';
-        $settings['postfix'] = $postfix;
-        $settings['steps-config'] = $this->getStepsGenerationConfig($input);
+		$postfix = $input->getOption('postfix');
 
-        $generator = new GherkinSteps($module, $settings);
+		$settings                 = [];
+		$settings['name']         = $this->getClassNameFromModule($module);
+		$settings['namespace']    = '';
+		$settings['postfix']      = $postfix;
+		$settings['steps-config'] = $this->getStepsGenerationConfig($input);
 
-        $output->writeln("<info>Generating Gherkin steps from module '{$module}...'</info>");
+		$generator = new GherkinSteps($module, $settings);
 
-        if (!empty($settings['steps-config'])) {
-            $output->writeln("<info>Reading configuration for module from '{$input->getOption('steps-config')}'</info>");
-        }
+		$output->writeln("<info>Generating Gherkin steps from module '{$module}...'</info>");
 
-        $content = $generator->produce();
+		if (!empty($settings['steps-config'])) {
+			$output->writeln("<info>Reading configuration for module from '{$input->getOption('steps-config')}'</info>");
+		}
 
-        $file = $this->buildPath(
-                Configuration::supportDir() . '_generated',
-                $settings['name']
-            ) . ucfirst($settings['name']) . 'GherkinSteps' . $postfix;
-        $file .= '.php';
+		$content = $generator->produce();
 
-        return $this->save($file, $content, true);
-    }
+		$file = $this->buildPath(Configuration::supportDir() . '_generated', $settings['name']);
 
-    /**
-     * @param $module
-     * @return string
-     */
-    protected function getClassNameFromModule($module)
-    {
-        $frags = explode('\\', $module);
-        return end($frags);
-    }
+		return $this->createFile($file, $content, true);
+	}
 
-    /**
-     * @param InputInterface $input
-     * @return array|mixed
-     */
-    protected function getStepsGenerationConfig(InputInterface $input)
-    {
-        $stepsConfigFile = empty($input->getOption('steps-config')) ?
-            Configuration::testsDir() . 'steppify.yml' :
-            $input->getOption('steps-config');
+	/**
+	 * @param $module
+	 *
+	 * @return string
+	 */
+	protected function getClassNameFromModule($module) {
+		$frags = explode('\\', $module);
+		return end($frags);
+	}
 
-        $stepsConfig = file_exists($stepsConfigFile) ?
-            Yaml::parse(file_get_contents($stepsConfigFile))
-            : [];
+	/**
+	 * @param InputInterface $input
+	 *
+	 * @return array|mixed
+	 */
+	protected function getStepsGenerationConfig(InputInterface $input) {
+		$stepsConfigFile = empty($input->getOption('steps-config')) ?
+			Configuration::testsDir() . 'steppify.yml' :
+			$input->getOption('steps-config');
 
-        return $stepsConfig;
-    }
+		$stepsConfig = file_exists($stepsConfigFile) ?
+			Yaml::parse(file_get_contents($stepsConfigFile))
+			: [];
+
+		return $stepsConfig;
+	}
+
+	protected function buildPath($path, $class) {
+		$className = $this->getShortClassName($class);
+		$path      = $this->createDirectoryFor($path, $class);
+
+		$filename = $this->completeSuffix($className, 'GherkinSteps');
+
+		return $path . $filename;
+	}
 }
