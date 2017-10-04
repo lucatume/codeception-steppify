@@ -163,7 +163,7 @@ EOF;
         $command = $app->find('steppify');
         $commandTester = new CommandTester($command);
 
-        $id = uniqid();
+        $id = md5(uniqid('foo',true));
 
         $commandTester->execute([
             'command' => $command->getName(),

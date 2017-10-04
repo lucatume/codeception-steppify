@@ -69,7 +69,7 @@ class Steppify extends Command implements CustomCommandInterface {
 
 		$content = $generator->produce();
 
-		$file = $this->buildPath(Configuration::supportDir() . '_generated', $settings['name']);
+		$file = $this->buildPath(Configuration::supportDir() . '_generated', $settings['name'], $settings['postfix'] );
 
 		return $this->createFile($file, $content, true);
 	}
@@ -101,11 +101,11 @@ class Steppify extends Command implements CustomCommandInterface {
 		return $stepsConfig;
 	}
 
-	protected function buildPath($path, $class) {
+	protected function buildPath($path, $class, $postfix = null) {
 		$className = $this->getShortClassName($class);
 		$path      = $this->createDirectoryFor($path, $class);
 
-		$filename = $this->completeSuffix($className, 'GherkinSteps');
+		$filename = $this->completeSuffix($className, 'GherkinSteps' . $postfix);
 
 		return $path . $filename;
 	}
