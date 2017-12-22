@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+### Fixed
+- documentation (thanks @pixelbrackets)
+
+##[1.0.4] 2017-10-04
+### Fixed
+- generation methods issues
 
 ##[1.0.3] 2016-12-12
 ### Added
