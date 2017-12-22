@@ -20,14 +20,14 @@ extensions:
 
 ## Usage
 The command will generate traits usable in [Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.") tester classes from codeception modules.  
-As an example I might want to generate [Gherkin](!g) steps to use Codeception own [PHPBrowser](!g codeception phpbrowser module) methods in Gherkin features:
+As an example I might want to generate [Gherkin](!g) steps to use Codeception own [PhpBrowser](!g codeception PhpBrowser module) module methods in Gherkin features:
 
 ```
-codecept gherkin:steppify PHPBrowser
+codecept gherkin:steppify PhpBrowser
 ```
 
-The command will generate `PHPBrowserGherkinSteps.php`, a PHP `trait`, file in the tests `_support/_generated` folder.
-To start using the new methods all that's required is to add a `use` statement for the `PHPBrowserSteps` trait in the suite `Tester` class:
+The command will generate `PhpBrowserGherkinSteps.php`, a PHP `trait` file, in the tests `_support/_generated` folder.
+To start using the new methods all that's required is to add a `use` statement for the `PhpBrowserSteps` trait in the suite `Tester` class:
 
 ```php
 <?php
@@ -51,7 +51,7 @@ To start using the new methods all that's required is to add a `use` statement f
 class AcceptanceTester extends \Codeception\Actor
 {
     use _generated\FunctionalTesterActions;
-    use _generated\PHPBrowserGherkinSteps;
+    use _generated\PhpBrowserGherkinSteps;
 
    /**
     * Define custom actions here
@@ -60,10 +60,10 @@ class AcceptanceTester extends \Codeception\Actor
 
 ```
 
-You will now be able to write Gherkin features using steps generated from `PHPBrowser` module provided methods like:
+You will now be able to write Gherkin features using steps generated from `PhpBrowser` module provided methods like:
 
 ```gherkin
-Scenario: methods provided by Codeception PHPBrowser module are available as Gherkin steps
+Scenario: methods provided by Codeception PhpBrowser module are available as Gherkin steps
 
     Feature: I can go on the site homepage
 
@@ -72,11 +72,14 @@ Scenario: methods provided by Codeception PHPBrowser module are available as Ghe
 ```
 
 The command is not limited to Codeception default modules only and will work with any custom module provided by other libraries or custom made for the project.
-While the command will make an extra effort to support modules in the `Codeception\Module` name space modules defined outside of that namespace will require the specification of  the fully qualified name to work:
+While the command will make an extra effort to support modules in the `Codeception\Module\` name space modules defined outside of that namespace will require the specification of the fully qualified name to work:
 
 ```shell
 codecept gherkin:steppify "Acme\Project\Tests\Modules\ModuleOne"
 ```
+
+This means that ```gherkin:steppify ModuleName``` is a shortcut for ```gherkin:steppify "Codeception\Module\ModuleName"``` and you may provide any other compatible namespaced class.
+
 ## Controlling the output methods
 
 While the command will try to be "smart" and helpful in generating the methods signatures it has, and will always have, limits.
@@ -99,7 +102,7 @@ The file has the following format:
 
 ```yaml
 modules:
-  PHPBrowser:
+  PhpBrowser:
     methods:
       amOnPage:
         generates: [given, when]
