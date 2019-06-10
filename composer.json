@@ -3,7 +3,7 @@
   "description": "Generate Gherkin steps from Codeception Modules.",
   "type": "library",
   "require": {
-    "codeception/codeception": "^2.2"
+    "codeception/codeception": "^3.0"
   },
   "license": "GPL-2.0",
   "authors": [
