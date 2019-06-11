@@ -58,6 +58,9 @@ class Steppify extends Command implements CustomCommandInterface {
 		$settings['namespace']    = '';
 		$settings['postfix']      = $postfix;
 		$settings['steps-config'] = $this->getStepsGenerationConfig($input);
+        if (0 < strlen($settings['steps-config']['namespace'])) {
+            $settings['namespace'] = $settings['steps-config']['namespace'];
+        }
 
 		$generator = new GherkinSteps($module, $settings);
 
