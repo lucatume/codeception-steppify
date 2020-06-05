@@ -101,6 +101,7 @@ The command supports a `--steps-config <file.yml>` option that allows specifying
 The file has the following format:
 
 ```yaml
+namespace: Acme\Project
 modules:
   PhpBrowser:
     methods:
@@ -124,9 +125,12 @@ modules:
         step: <step definition template>
 ```
 
+If a `namespace` option is specified the one specified in the settings file will be overridden by it.
+
 ## Options
 The command supports options meant to make its output controllable to a comfortable degree:
 
 * `--steps-config <file>` - see [the configuration file section](#configuration-file); allows specifying the path to a step definition generation configuration file.
 * `--prefix <prefix>` - allows specifying a string that should be appended to the generated step file name.
+* `--namespace <namespace>` -- allows specifying the namespace steps will be generated into; by default steps would be generated in the `_generated` namespace, passing `Acme\Namespace` to this option will make traits be generated into the `Acme\Project\_generated` namespace.
 
