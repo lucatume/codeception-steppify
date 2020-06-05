@@ -976,6 +976,51 @@ EOF;
 		}
 	}
 
+	/**
+	 * It should allow namespace option to overrule setting namespace
+	 *
+	 * @test
+	 * @dataProvider methodsAndNotations
+	 */
+	public function should_allow_namespace_option_to_overrule_setting_namespace($methodName, $expected, $notExpected = null) {
+		$app = new Application();
+		$this->addCommand($app);
+		$command = $app->find('steppify');
+		$commandTester = new CommandTester($command);
+
+		$id = uniqid();
+
+		$commandTester->execute([
+			'command' => $command->getName(),
+			'module' => 'tad\Tests\Modules\ModuleTen',
+			'--steps-config' => codecept_data_dir('configs/module-10-1.yml'),
+			'--namespace' => 'Acme\Project',
+			'--postfix' => $id
+		]);
+
+		$class = 'ModuleTenGherkinSteps' . $id;
+
+		$generatedTraitFiilePath = Configuration::supportDir() . '_generated/' . $class . '.php';
+		require_once( $generatedTraitFiilePath );
+
+		$traitFullyQualifiedName = 'Acme\\Project\\_generated\\' . $class;
+		$this->assertTrue(trait_exists( $traitFullyQualifiedName ));
+
+		$ref = new ReflectionClass($traitFullyQualifiedName);
+
+		$this->assertTrue($ref->hasMethod('step_' . $methodName));
+
+		$method = $ref->getMethod('step_' . $methodName);
+		$docBlock = $method->getDocComment();
+
+		$this->assertContains('@Given ' . $expected, $docBlock);
+		if (!empty($notExpected)) {
+			foreach ((array)$notExpected as $ne) {
+				$this->assertNotRegExp('#@Given .*' . $ne . '.*#', $docBlock);
+			}
+		}
+	}
+
 	protected function _before()
 	{
 		$this->testModules = new FilesystemIterator(codecept_data_dir('modules'),
