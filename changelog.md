@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+##[1.0.6] 2020-06-05
+
+### Added
+
+- namespace support (thanks @patrickvale)
+
 ##[1.0.5] 2020-06-04
 
 ### Fixed
@@ -47,5 +53,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [1.0.3]: https://github.com/lucatume/codeception-steppify/compare/1.0.2...1.0.3
 [1.0.4]: https://github.com/lucatume/codeception-steppify/compare/1.0.3...1.0.4
 [1.0.5]: https://github.com/lucatume/codeception-steppify/compare/1.0.4...1.0.5
-[unreleased]: https://github.com/lucatume/codeception-steppify/compare/1.0.5...HEAD
+[1.0.6]: https://github.com/lucatume/codeception-steppify/compare/1.0.5...1.0.6
+[unreleased]: https://github.com/lucatume/codeception-steppify/compare/1.0.6...HEAD
 
