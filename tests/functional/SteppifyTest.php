@@ -889,10 +889,97 @@ EOF;
         }
     }
 
-    protected function _before()
-    {
-        $this->testModules = new FilesystemIterator(codecept_data_dir('modules'),
-            FilesystemIterator::CURRENT_AS_PATHNAME);
+	/**
+	 * It should allow setting the namespace of the generated class
+	 *
+	 * @test
+	 * @dataProvider methodsAndNotations
+	 */
+	public function should_allow_setting_the_namespace_of_the_generated_class($methodName, $expected, $notExpected = null) {
+		$app = new Application();
+		$this->addCommand($app);
+		$command = $app->find('steppify');
+		$commandTester = new CommandTester($command);
+
+		$id = uniqid();
+
+		$commandTester->execute([
+			'command' => $command->getName(),
+			'module' => 'tad\Tests\Modules\ModuleEight',
+			'--namespace' => 'Acme\Project',
+			'--postfix' => $id
+		]);
+
+		$class = 'ModuleEightGherkinSteps' . $id;
+
+		require_once(Configuration::supportDir() . '_generated/' . $class . '.php');
+
+		$traitFullyQualifiedName = 'Acme\\Project\\_generated\\' . $class;
+		$this->assertTrue(trait_exists( $traitFullyQualifiedName ));
+
+		$ref = new ReflectionClass($traitFullyQualifiedName);
+
+		$this->assertTrue($ref->hasMethod('step_' . $methodName));
+
+		$method = $ref->getMethod('step_' . $methodName);
+		$docBlock = $method->getDocComment();
+
+		$this->assertContains('@Given ' . $expected, $docBlock);
+		if (!empty($notExpected)) {
+			foreach ((array)$notExpected as $ne) {
+				$this->assertNotRegExp('#@Given .*' . $ne . '.*#', $docBlock);
+			}
+		}
+	}
+
+	/**
+	 * It should allow setting the namespace of the generated class from the settings file
+	 *
+	 * @test
+	 * @dataProvider methodsAndNotations
+	 */
+	public function should_allow_setting_the_namespace_of_the_generated_class_from_the_settings_file($methodName, $expected, $notExpected = null) {
+		$app = new Application();
+		$this->addCommand($app);
+		$command = $app->find('steppify');
+		$commandTester = new CommandTester($command);
+
+		$id = uniqid();
+
+		$commandTester->execute([
+			'command' => $command->getName(),
+			'module' => 'tad\Tests\Modules\ModuleNine',
+			'--steps-config' => codecept_data_dir('configs/module-9-1.yml'),
+			'--postfix' => $id
+		]);
+
+		$class = 'ModuleNineGherkinSteps' . $id;
+
+		$generatedTraitFiilePath = Configuration::supportDir() . '_generated/' . $class . '.php';
+		require_once( $generatedTraitFiilePath );
+
+		$traitFullyQualifiedName = 'Acme\\Project\\_generated\\' . $class;
+		$this->assertTrue(trait_exists( $traitFullyQualifiedName ));
+
+		$ref = new ReflectionClass($traitFullyQualifiedName);
+
+		$this->assertTrue($ref->hasMethod('step_' . $methodName));
+
+		$method = $ref->getMethod('step_' . $methodName);
+		$docBlock = $method->getDocComment();
+
+		$this->assertContains('@Given ' . $expected, $docBlock);
+		if (!empty($notExpected)) {
+			foreach ((array)$notExpected as $ne) {
+				$this->assertNotRegExp('#@Given .*' . $ne . '.*#', $docBlock);
+			}
+		}
+	}
+
+	protected function _before()
+	{
+		$this->testModules = new FilesystemIterator(codecept_data_dir('modules'),
+			FilesystemIterator::CURRENT_AS_PATHNAME);
     }
 
     protected function _after()

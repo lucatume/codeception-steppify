@@ -37,7 +37,9 @@ class Steppify extends Command implements CustomCommandInterface {
 			->addOption('postfix', null, InputOption::VALUE_REQUIRED,
 				'A postfix that should be appended to the the trait file name', '')
 			->addOption('steps-config', null, InputOption::VALUE_REQUIRED,
-				'The configuration file that should be used to generate the Gherkin steps', '');
+				'The configuration file that should be used to generate the Gherkin steps', '')
+			->addOption('namespace', null, InputOption::VALUE_REQUIRED,
+				'The namespace of the generated Gherkin steps', '');
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
@@ -52,15 +54,19 @@ class Steppify extends Command implements CustomCommandInterface {
 		}
 
 		$postfix = $input->getOption('postfix');
-
 		$settings                 = [];
 		$settings['name']         = $this->getClassNameFromModule($module);
-		$settings['namespace']    = '';
+		$settings['namespace']    = $input->getOption('namespace');
 		$settings['postfix']      = $postfix;
 		$settings['steps-config'] = $this->getStepsGenerationConfig($input);
-        if (0 < strlen($settings['steps-config']['namespace'])) {
+		if (empty($settings['namespace']) && isset($settings['steps-config']['namespace'])) {
             $settings['namespace'] = $settings['steps-config']['namespace'];
         }
+
+		// Deduplicate '\\' in namespace.
+		if ( strpos( $settings['namespace'], '\\' ) !== false ) {
+			$settings['namespace'] = str_replace( '\\\\', '\\', $settings['namespace'] );
+		}
 
 		$generator = new GherkinSteps($module, $settings);
 
