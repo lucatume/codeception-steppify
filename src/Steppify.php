@@ -80,7 +80,7 @@ class Steppify extends Command implements CustomCommandInterface {
 
 		$file = $this->buildPath(Configuration::supportDir() . '_generated', $settings['name'], $settings['postfix'] );
 
-		return $this->createFile($file, $content, true);
+		return (int)$this->createFile($file, $content, true);
 	}
 
 	/**
