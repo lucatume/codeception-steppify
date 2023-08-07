@@ -497,6 +497,8 @@ EOF;
                 $defaultValue = 'null';
             } elseif (is_string($defaultValue)) {
                 $defaultValue = "'" . $defaultValue . "'";
+            } elseif (is_bool($defaultValue)) {
+                $defaultValue = $defaultValue ? 'true' : 'false';
             }
 
             return sprintf('%s $%s = %s', $type, $name, $defaultValue);
