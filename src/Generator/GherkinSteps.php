@@ -22,7 +22,7 @@ namespace {{namespace}}_generated;
 
 trait {{name}}GherkinSteps{{postfix}}
 {
-    
+
     {{methods}}
 }
 
@@ -30,16 +30,16 @@ EOF;
 
     protected $conversionTemplate = <<< EOF
         \$args = steppify_convertTableNodesToArrays(func_get_args(), \$iterations);
-        
+
         if(!empty(\$iterations)) {
             \$returnValues = [];
             foreach(\$iterations as \$iteration){
-                \$returnValues[] = \$this->getScenario()->runStep(new \Codeception\Step\Action('{{method}}', \$iteration));
+                \$returnValues[] = call_user_func_array([\$this,"{{method}}"],\$iteration);
             }
-            
+
             return \$returnValues;
         }
-        
+
 EOF;
 
     protected $methodTemplate = <<<EOF
@@ -52,7 +52,7 @@ EOF;
      */
     public function {{action}}({{params}}) {
         {{argsConversion}}
-        return \$this->getScenario()->runStep(new \Codeception\Step\Action('{{method}}', \$args));
+        return call_user_func_array([\$this,"{{method}}"],\$args);
     }
 EOF;
 
@@ -477,8 +477,8 @@ EOF;
      */
     protected function getEntryForParameter(\ReflectionParameter $parameter)
     {
-        if ($parameter->isArray()) {
-            $type = '\Behat\Gherkin\Node\TableNode';
+        if ($parameter->getType() && ($parameter->getType()->getName() === 'array')) {
+            $type = '\Behat\Gherkin\Node\TableNode|array';
         } else {
             $class = $parameter->getClass();
             $type = empty($class) ? '' : $class->getName();
@@ -487,7 +487,7 @@ EOF;
         $name = $parameter->getName();
         $defaultValue = $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : false;
 
-        $noDefaultValue = empty($parameter->isDefaultValueAvailable()) || is_array($defaultValue);
+        $noDefaultValue = empty($parameter->isDefaultValueAvailable());
         if ($noDefaultValue && empty($type)) {
             return sprintf('$%s', $name);
         } elseif ($noDefaultValue) {
@@ -497,6 +497,8 @@ EOF;
                 $defaultValue = 'null';
             } elseif (is_string($defaultValue)) {
                 $defaultValue = "'" . $defaultValue . "'";
+            } elseif (is_array($defaultValue)){
+                $defaultValue = json_encode($defaultValue);
             }
 
             return sprintf('%s $%s = %s', $type, $name, $defaultValue);
