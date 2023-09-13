@@ -3,8 +3,8 @@
 namespace tad\Codeception\Command;
 
 
-use Codeception\Command\Shared\Config;
-use Codeception\Command\Shared\FileSystem;
+use Codeception\Command\Shared\ConfigTrait;
+use Codeception\Command\Shared\FileSystemTrait;
 use Codeception\Configuration;
 use Codeception\CustomCommandInterface;
 use Symfony\Component\Console\Command\Command;
@@ -17,15 +17,15 @@ use tad\Codeception\Command\Generator\GherkinSteps;
 
 class Steppify extends Command implements CustomCommandInterface {
 
-	use Config;
-	use FileSystem;
+	use ConfigTrait;
+	use FileSystemTrait;
 
 	/**
 	 * returns the name of the command
 	 *
 	 * @return string
 	 */
-	public static function getCommandName() {
+	public static function getCommandName(): string {
 		return 'gherkin:steppify';
 	}
 
@@ -42,7 +42,7 @@ class Steppify extends Command implements CustomCommandInterface {
 				'The namespace of the generated Gherkin steps', '');
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$module = $input->getArgument('module');
 
 		if (!class_exists($module)) {
@@ -80,7 +80,7 @@ class Steppify extends Command implements CustomCommandInterface {
 
 		$file = $this->buildPath(Configuration::supportDir() . '_generated', $settings['name'], $settings['postfix'] );
 
-		return $this->createFile($file, $content, true);
+		return (int)$this->createFile($file, $content, true);
 	}
 
 	/**
